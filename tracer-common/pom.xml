@@ -11,7 +11,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tracer-common</artifactId>
-    <packaging>pom</packaging>
     <name>tracer-common</name>
     <description>这是tracer项目的通用项目,这个项目封装了一些通用类</description>
 

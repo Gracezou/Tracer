@@ -1,5 +1,7 @@
 package com.miracle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -15,6 +17,8 @@ import java.util.Properties;
 @SpringBootApplication
 public class TracerBootApplication {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TracerBootApplication.class);
+
     public static void main(String[] args) {
         try {
             Properties properties = new Properties();
@@ -22,9 +26,9 @@ public class TracerBootApplication {
             SpringApplication app = new SpringApplication(TracerBootApplication.class);
             app.setDefaultProperties(properties);
             app.run(args);
-            System.out.println("Start success!");
+            LOG.info("Success to start application!");
         } catch (Exception ex) {
-            System.out.println("Fail to start SyncOrderBootApplication due to exception:" + ex.toString());
+            LOG.error("Failed to start application.", ex);
         }
     }
 }

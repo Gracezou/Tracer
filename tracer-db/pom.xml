@@ -12,7 +12,6 @@
 
     <artifactId>tracer-db</artifactId>
 
-    <packaging>pom</packaging>
     <name>tracer-db</name>
     <description>这个项目封装了tracer项目所有db操作</description>
 
