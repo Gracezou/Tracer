@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.miracle</groupId>
+    <artifactId>tracer-base</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+    <name>tracer-base</name>
+    <description>这是tracer项目的根,所有tracer的项目都要继承于该项目,单纯用于包管理</description>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Import dependency management from Spring Boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--引入dozer-->
+            <dependency>
+                <groupId>com.github.dozermapper</groupId>
+                <artifactId>dozer-core</artifactId>
+                <version>${dozer.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <dozer.version>6.1.0</dozer.version>
+        <spring.boot.version>2.0.3.RELEASE</spring.boot.version>
+    </properties>
+    
+</project>
