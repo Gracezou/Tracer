@@ -22,6 +22,7 @@ public class TracerBootApplication {
     public static void main(String[] args) {
         try {
             Properties properties = new Properties();
+            properties.load(TracerBootApplication.class.getResourceAsStream("/common.properties"));
 
             SpringApplication app = new SpringApplication(TracerBootApplication.class);
             app.setDefaultProperties(properties);
