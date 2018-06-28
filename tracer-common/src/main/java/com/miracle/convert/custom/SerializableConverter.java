@@ -29,11 +29,7 @@ public class SerializableConverter implements CustomConverter {
 
         if (sourceFieldValue instanceof Serializable) {
             // 如果实现了可序列化接口,那么就用序列化深克隆
-            try {
-                existingDestinationFieldValue = SerializableCloneUtils.deepClone((Serializable) sourceFieldValue);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            existingDestinationFieldValue = SerializableCloneUtils.deepClone((Serializable) sourceFieldValue);
         }
 
         return existingDestinationFieldValue;

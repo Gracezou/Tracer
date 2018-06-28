@@ -345,7 +345,7 @@ public class Jdk8CompatibilityConverter implements CustomConverter {
 
         private Object obj;
 
-        public Result(Object obj) {
+        Result(Object obj) {
             this(true, obj);
         }
 
