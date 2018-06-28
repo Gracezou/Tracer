@@ -22,6 +22,12 @@
             <artifactId>tracer-data</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--开启aop-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

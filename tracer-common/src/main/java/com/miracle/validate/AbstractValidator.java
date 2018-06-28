@@ -94,9 +94,10 @@ abstract class AbstractValidator<T> {
      */
     void checkValue() {
         // 要对参数本身进行校验
-        if (this.value == null) {
-            this.errorEntries.add(new ErrorEntry(this.nullValueCode, DEFAULT_NULL_VALUE_MESSAGE));
+        if (this.value != null) {
+            return;
         }
+        this.errorEntries.add(new ErrorEntry(this.nullValueCode, DEFAULT_NULL_VALUE_MESSAGE));
     }
 
     /**

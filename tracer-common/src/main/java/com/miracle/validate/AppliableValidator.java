@@ -38,6 +38,17 @@ public class AppliableValidator<T> extends AbstractValidator<T> {
 
     /**
      * 返回一个带传入值的{@code AcceptableValidator}
+     * @param value 带校验的对象
+     * @param nullValueCode 当校验对象为空时返回的错误码
+     * @param <P> 对象的类型
+     * @return 一个校验者
+     */
+    public static <P> AppliableValidator<P> of(P value, String nullValueCode) {
+        return of(value, nullValueCode, false);
+    }
+
+    /**
+     * 返回一个带传入值的{@code AcceptableValidator}
      *
      * @param value 带校验的对象
      * @param fastValidate 是否是快速校验模式
@@ -115,7 +126,7 @@ public class AppliableValidator<T> extends AbstractValidator<T> {
      */
     public AppliableValidator<T> on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
         this.checkValue();
-        if (this.keepValidating() && predicate.test(this.value)) {
+        if (this.keepValidating() && !predicate.test(this.value)) {
             this.setError(errorCode, errorMsg);
         }
         return this;
@@ -129,7 +140,7 @@ public class AppliableValidator<T> extends AbstractValidator<T> {
      * @return 返回更新后的校验者
      */
     public AppliableValidator<T> onIf(Predicate<? super T> predicate, String errorMsg, Predicate<? super T> condition) {
-        return this.onIf(predicate, errorMsg, NO_ERROR_CODE, condition);
+        return this.onIf(predicate, errorMsg, condition, NO_ERROR_CODE);
     }
 
     /**
@@ -142,10 +153,10 @@ public class AppliableValidator<T> extends AbstractValidator<T> {
      */
     public AppliableValidator<T> onIf(Predicate<? super T> predicate,
                                        String errorMsg,
-                                       String errorCode,
-                                       Predicate<? super T> condition) {
+                                       Predicate<? super T> condition,
+                                      String errorCode) {
         this.checkValue();
-        if (this.keepValidating() && condition.test(this.value) && predicate.test(this.value)) {
+        if (this.keepValidating() && condition.test(this.value) && !predicate.test(this.value)) {
             this.setError(errorCode, errorMsg);
         }
         return this;
