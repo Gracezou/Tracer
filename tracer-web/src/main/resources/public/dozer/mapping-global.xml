@@ -6,43 +6,43 @@
 	<!--添加对jdk8以及以及异常的转化支持-->
 	<configuration>
 		<custom-converters>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.LocalDate</class-a>
 				<class-b>java.time.LocalDate</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.LocalTime</class-a>
 				<class-b>java.time.LocalTime</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.LocalDateTime</class-a>
 				<class-b>java.time.LocalDateTime</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.ZonedDateTime</class-a>
 				<class-b>java.time.ZonedDateTime</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.ZoneId</class-a>
 				<class-b>java.time.ZoneId</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.Period</class-a>
 				<class-b>java.time.Period</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.Duration</class-a>
 				<class-b>java.time.Duration</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.util.Locale</class-a>
 				<class-b>java.util.Locale</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.Jdk8CompatibilityConverter">
+			<converter type="com.miracle.convert.custom.Jdk8CompatibilityConverter">
 				<class-a>java.time.Instant</class-a>
 				<class-b>java.time.Instant</class-b>
 			</converter>
-			<converter type="com.angho.manager.convert.SerializableConverter">
+			<converter type="com.miracle.convert.custom.SerializableConverter">
 				<class-a>java.lang.Exception</class-a>
 				<class-b>java.lang.Exception</class-b>
 			</converter>
