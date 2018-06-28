@@ -15,6 +15,12 @@
     <description>这个项目封装了tracer项目所有的POJO类</description>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tracer-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--引入mongodb-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

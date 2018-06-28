@@ -16,11 +16,6 @@
     <description>这个项目封装了tracer项目所有db操作</description>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tracer-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
