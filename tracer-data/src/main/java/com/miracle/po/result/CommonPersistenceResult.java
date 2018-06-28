@@ -56,7 +56,16 @@ public class CommonPersistenceResult<E> {
      */
     private int page;
 
-    public static <V, T extends CommonPersistenceResult<V>> ResultBuilder<V, T> resultBuilder(Supplier<T> supplier) {
+    /**
+     * 返回结果的构造者
+     * 所有该类的子类,其属性的setter方法均只提供包私有权限,外界即便自行new出也无法正常使用
+     * 所有结果均需要采用这个方法返回的建造者进行构造
+     * @param supplier 返回结果的构造函数
+     * @param <V> 返回结果持有数据类型
+     * @param <R> 返回结果类型
+     * @return 返回结果
+     */
+    public static <V, R extends CommonPersistenceResult<V>> ResultBuilder<V, R> resultBuilder(Supplier<R> supplier) {
         return new ResultBuilder<>(supplier);
     }
 
