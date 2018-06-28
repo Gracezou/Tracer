@@ -28,11 +28,19 @@
                 <artifactId>dozer-core</artifactId>
                 <version>${dozer.version}</version>
             </dependency>
+
+            <!--引入fastjson-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <properties>
         <dozer.version>6.1.0</dozer.version>
+        <fastjson.version>1.2.47</fastjson.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
