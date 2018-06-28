@@ -81,6 +81,7 @@ public class StringUtils {
      *      String newString = StringUtils.format("{0}-{1}-2018", "Grace", "Miracle");
      *      // newString = "Grace-Miracle-2018
      * }
+     * 之所以不用{@link String#replaceAll(String, String)}等一类的方法,是因为该方法用了正则表达式
      * @param baseString 基础字符串,带占位符
      * @param args 变量数组
      * @return 替换占位符之后的字符串

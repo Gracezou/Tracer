@@ -90,5 +90,8 @@ public class StringUtilsTest extends BaseTest {
         assertEquals("has_null_null_placeholder", StringUtils.format(hasValidPlaceholder, null, null));
         // 15.基础字符串有占位符,有参数,参数数量多于占位符
         assertEquals("has_one_two_placeholder", StringUtils.format(hasValidPlaceholder, "one", "two", "three"));
+        // 16.基础字符串有占位符,但是占位符中有重复索引,有参数
+        final String hasDuplicateIndexPlaceholder = "has_{0}_{1}_{1}_placeholder";
+        assertEquals("has_one_two_two_placeholder", StringUtils.format(hasDuplicateIndexPlaceholder, "one", "two"));
     }
 }

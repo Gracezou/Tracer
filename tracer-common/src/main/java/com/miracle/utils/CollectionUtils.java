@@ -1,7 +1,10 @@
 package com.miracle.utils;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Description:{@link Collection}的工具类
@@ -37,5 +40,74 @@ public class CollectionUtils {
         return Optional.ofNullable(collection)
                 .map(c -> !c.isEmpty())
                 .orElse(false);
+    }
+
+    /**
+     * 将一个{@link Collection}转化成{@link HashMap}
+     * @param collection 集合
+     * @param keyGenerator key生成器
+     * @param valueGenerator value生成器
+     * @param <K> key的类型
+     * @param <V> value的类型
+     * @param <U> 集合中的数据类型
+     * @return 转化之后的map
+     */
+    public static <K, V, U> Map<K, V> toHashMap(Collection<U> collection,
+                                                Function<U, K> keyGenerator,
+                                                Function<U, V> valueGenerator) {
+        return toHashMap(collection, keyGenerator, valueGenerator, CollectionUtils::defaultMerger);
+    }
+
+    /**
+     * 将一个{@link Collection}转化成{@link HashMap}
+     * @param collection 集合
+     * @param keyGenerator key生成器
+     * @param valueGenerator value生成器
+     * @param merger 合并的函数
+     * @param <K> key的类型
+     * @param <V> value的类型
+     * @param <U> 集合中的数据类型
+     * @return 转化之后的map
+     */
+    public static <K, V, U> Map<K, V> toHashMap(Collection<U> collection,
+                                                Function<U, K> keyGenerator,
+                                                Function<U, V> valueGenerator,
+                                                BinaryOperator<V> merger) {
+        return toMap(collection, keyGenerator, valueGenerator, merger, () -> new HashMap<>(collection.size()));
+    }
+
+    /**
+     * 将一个{@link Collection}转化成{@link Map}
+     * @param collection 集合
+     * @param keyGenerator key生成器
+     * @param valueGenerator value生成器
+     * @param merger 合并的函数
+     * @param <K> key的类型
+     * @param <V> value的类型
+     * @param <U> 集合中的数据类型
+     * @return 转化之后的map
+     */
+    public static <K, V, U> Map<K, V> toMap(Collection<U> collection,
+                                            Function<U, K> keyGenerator,
+                                            Function<U, V> valueGenerator,
+                                            BinaryOperator<V> merger,
+                                            Supplier<Map<K, V>> mapSupplier) {
+        if (collection == null) {
+            return null;
+        }
+        return collection.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(keyGenerator, valueGenerator, merger, mapSupplier));
+    }
+
+    /**
+     * 默认的合并方式
+     * @param oldValue 旧值
+     * @param newValue 新值
+     * @param <V> 值的类型
+     * @return 合并之后的值
+     */
+    private static <V> V defaultMerger(V oldValue, V newValue) {
+        return newValue;
     }
 }
