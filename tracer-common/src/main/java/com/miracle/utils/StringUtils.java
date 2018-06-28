@@ -24,6 +24,9 @@ public class StringUtils {
             'Y', 'Z'
     };
 
+    private static final char LEFT_BRACE = '{';
+    private static final char RIGHT_BRACE = '}';
+
     /**
      * 不允许实例化
      */
@@ -67,6 +70,49 @@ public class StringUtils {
         while (length-- > 0) {
             int index = new Random().nextInt(CHARS.length);
             sb.append(CHARS[index]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 用给定的{@code args}来替换给定基础字符串中的占位符
+     * 占位符形式为"{1}",大括号中的数字对应的是{@code args}中数据的索引
+     * {@code
+     *      String newString = StringUtils.format("{0}-{1}-2018", "Grace", "Miracle");
+     *      // newString = "Grace-Miracle-2018
+     * }
+     * @param baseString 基础字符串,带占位符
+     * @param args 变量数组
+     * @return 替换占位符之后的字符串
+     */
+    public static String format(String baseString, Object... args) {
+        if (baseString == null) {
+            return null;
+        }
+        final StringBuilder sb = new StringBuilder();
+        final char[] chars = baseString.toCharArray();
+        for (int i = 0 ; i < chars.length ; i++) {
+            char c = chars[i];
+            if (c == LEFT_BRACE) {
+                final StringBuilder indexBuffer = new StringBuilder();
+                int j;
+                for (j = i + 1; j < chars.length && chars[j] != RIGHT_BRACE ; j++) {
+                    indexBuffer.append(chars[j]);
+                }
+                final String s = indexBuffer.toString();
+                final int index = notEmptyOrNull(s) ? Integer.parseInt(s) : -1;
+                if (index >= 0 && index < args.length) {
+                    sb.append(args[index]);
+                } else {
+                    sb.append(LEFT_BRACE)
+                            .append(indexBuffer)
+                            .append(RIGHT_BRACE);
+                }
+                // 从"}"所在索引继续遍历
+                i = j;
+            } else {
+                sb.append(c);
+            }
         }
         return sb.toString();
     }
