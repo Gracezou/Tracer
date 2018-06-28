@@ -12,15 +12,15 @@ import java.util.function.Predicate;
  * @version 1.0
  * @since jdk 1.8
  * @param <T> 被校验的参数类型
- * @param <U> 校验之后执行函数的返回结果
  */
-public class AppliableValidator<T, U> extends AbstractValidator<T> {
+public class AppliableValidator<T> extends AbstractValidator<T> {
 
     /**
-     * 校验成功之后的调用函数
+     * 构造器
+     * @param value 待校验的值
+     * @param nullValueCode 空值错误码
+     * @param fastValidate 是否是快速验证模式
      */
-    private Function<T, U> successHandler;
-
     private AppliableValidator(T value, String nullValueCode, boolean fastValidate) {
         super(value, nullValueCode, fastValidate);
     }
@@ -30,10 +30,9 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      *
      * @param value 带校验的对象
      * @param <P> 对象的类型
-     * @param <R> 返回结果的类型
      * @return 一个校验者
      */
-    public static <P, R> AppliableValidator<P, R> of(P value) {
+    public static <P> AppliableValidator<P> of(P value) {
         return of(value, false);
     }
 
@@ -45,7 +44,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param <P> 对象的类型
      * @return 一个校验者
      */
-    public static <P, R> AppliableValidator<P, R> of(P value, boolean fastValidate) {
+    public static <P> AppliableValidator<P> of(P value, boolean fastValidate) {
         return of(value, NO_ERROR_CODE, fastValidate);
     }
 
@@ -59,7 +58,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @return 一个校验者
      * @throws NullPointerException 当传入的空对象错误码为空时抛出异常
      */
-    public static <P, R> AppliableValidator<P, R> of(P value, String nullValueCode, boolean fastValidate) {
+    public static <P> AppliableValidator<P> of(P value, String nullValueCode, boolean fastValidate) {
         if (nullValueCode == null) {
             throw new NullPointerException(NULL_ERROR_CODE_MESSAGE);
         }
@@ -73,7 +72,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param <R> mapper返回的类型
      * @return 返回更新后的校验者
      */
-    public <R> AppliableValidator<T, U> notNull(Function<? super T, ? extends R> mapper, String errorMsg) {
+    public <R> AppliableValidator<T> notNull(Function<? super T, ? extends R> mapper, String errorMsg) {
         return this.notNull(mapper, errorMsg, NO_ERROR_CODE);
     }
 
@@ -85,7 +84,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param <R> mapper返回的类型
      * @return 返回更新后的校验者
      */
-    public <R> AppliableValidator<T, U> notNull(Function<? super T, ? extends R> mapper,
+    public <R> AppliableValidator<T> notNull(Function<? super T, ? extends R> mapper,
                                                 String errorMsg,
                                                 String errorCode) {
         this.checkValue();
@@ -102,7 +101,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param errorMsg 错误信息
      * @return 返回更新后的校验者
      */
-    public AppliableValidator<T, U> on(Predicate<? super T> predicate, String errorMsg) {
+    public AppliableValidator<T> on(Predicate<? super T> predicate, String errorMsg) {
         return this.on(predicate, errorMsg, NO_ERROR_CODE);
     }
 
@@ -114,7 +113,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param errorCode 错误码
      * @return 返回更新后的校验者
      */
-    public AppliableValidator<T, U> on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
+    public AppliableValidator<T> on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
         this.checkValue();
         if (this.keepValidating() && predicate.test(this.value)) {
             this.setError(errorCode, errorMsg);
@@ -129,7 +128,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param condition 校验的条件
      * @return 返回更新后的校验者
      */
-    public AppliableValidator<T, U> onIf(Predicate<? super T> predicate, String errorMsg, Predicate<? super T> condition) {
+    public AppliableValidator<T> onIf(Predicate<? super T> predicate, String errorMsg, Predicate<? super T> condition) {
         return this.onIf(predicate, errorMsg, NO_ERROR_CODE, condition);
     }
 
@@ -141,7 +140,7 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
      * @param errorCode 错误码
      * @return 返回更新后的校验者
      */
-    public AppliableValidator<T, U> onIf(Predicate<? super T> predicate,
+    public AppliableValidator<T> onIf(Predicate<? super T> predicate,
                                        String errorMsg,
                                        String errorCode,
                                        Predicate<? super T> condition) {
@@ -153,30 +152,22 @@ public class AppliableValidator<T, U> extends AbstractValidator<T> {
     }
 
     /**
-     * 当校验通过时执行的函数
-     * @param successHandler 数据转化函数
-     * @return 更新后的校验者
-     * @throws DuplicateSuccessHandlerException 当执行函数被重复定义之时抛出该异常
+     * 执行验证逻辑
+     * @param successHandler 验证成功的执行函数
+     * @param errorHandler 验证失败的执行函数
+     * @param <R> 函数执行的返回结果类型
+     * @return 返回结果
+     * @throws NullPointerException 当{@code successHandler}为{@code null}时抛出
+     * @throws NullPointerException 当{@code #errorHandler}为{@code null}时抛出
      */
-    public AppliableValidator<T, U> onSuccess(Function<T, U> successHandler) {
-        if (this.successHandler != null) {
-            throw new DuplicateSuccessHandlerException("The success mapper must be unique.");
+    public <R> R validate(Function<T, R> successHandler, BiFunction<T, String, R> errorHandler) {
+        if (successHandler == null) {
+            throw new NullPointerException("The success mapper must not be null.");
         }
-        this.successHandler = successHandler;
-        return this;
-    }
-
-    /**
-     * 当校验不通过时执行的函数
-     * @param errorHandler 数据消费函数,会传入2个参数,第一个是被校验的参数,第二个是校验错误的信息
-     * @return 返回函数的执行返回结果
-     * @throws NullPointerException 当{@link #successHandler}未定义时抛出
-     */
-    public U onFailure(BiFunction<T, String, U> errorHandler) {
-        if (this.successHandler == null) {
-            throw new NullPointerException("The success consumer must not be null.");
+        if (errorHandler == null) {
+            throw new NullPointerException("The error mapper must not be null.");
         }
         this.checkValue();
-        return this.isValid() ? this.successHandler.apply(this.value) : errorHandler.apply(this.value, this.getErrMsg());
+        return this.isValid() ? successHandler.apply(this.value) : errorHandler.apply(this.value, this.getErrMsg());
     }
 }

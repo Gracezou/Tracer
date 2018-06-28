@@ -17,11 +17,6 @@ import java.util.function.Predicate;
 public class AcceptableValidator<T> extends AbstractValidator<T> {
 
     /**
-     * 校验成功时调用的函数
-     */
-    private Consumer<T> successHandler;
-
-    /**
      * 构造一个校验者实例
      * @param value 传入的值
      */
@@ -154,31 +149,22 @@ public class AcceptableValidator<T> extends AbstractValidator<T> {
     }
 
     /**
-     * 当校验通过时执行的函数
-     * @param successHandler 数据消费函数
-     * @return 更新后的校验者
-     * @throws DuplicateSuccessHandlerException 当执行函数被重复定义之时抛出该异常
+     * 执行验证逻辑
+     * @param successHandler 验证成功的执行函数
+     * @param errorHandler 验证失败的执行函数
+     * @throws NullPointerException 当{@code successHandler}为{@code null}时抛出
+     * @throws NullPointerException 当{@code #errorHandler}为{@code null}时抛出
      */
-    public AcceptableValidator<T> onSuccess(Consumer<T> successHandler) {
-        if (this.successHandler != null) {
-            throw new DuplicateSuccessHandlerException("The success consumer must be unique.");
-        }
-        this.successHandler = successHandler;
-        return this;
-    }
-
-    /**
-     * 当校验不通过时执行的函数
-     * @param errorHandler 数据消费函数,会传入2个参数,第一个是被校验的参数,第二个是校验错误的信息
-     * @throws NullPointerException 当{@link #successHandler}未定义时抛出
-     */
-    public void onFailure(BiConsumer<T, String> errorHandler) {
-        if (this.successHandler == null) {
+    public void validate(Consumer<T> successHandler, BiConsumer<T, String> errorHandler) {
+        if (successHandler == null) {
             throw new NullPointerException("The success consumer must not be null.");
+        }
+        if (errorHandler == null) {
+            throw new NullPointerException("The error consumer must not be null.");
         }
         this.checkValue();
         if (this.isValid()) {
-            this.successHandler.accept(this.value);
+            successHandler.accept(this.value);
         } else {
             errorHandler.accept(this.value, this.getErrMsg());
         }

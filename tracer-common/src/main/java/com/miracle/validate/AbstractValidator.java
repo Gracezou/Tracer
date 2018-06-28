@@ -135,16 +135,4 @@ abstract class AbstractValidator<T> {
             return message;
         }
     }
-
-    /**
-     * 当校验成功后的执行函数被重复定义时抛出的异常类
-     */
-    static class DuplicateSuccessHandlerException extends RuntimeException {
-        public DuplicateSuccessHandlerException() {
-        }
-
-        public DuplicateSuccessHandlerException(String message) {
-            super(message);
-        }
-    }
 }
