@@ -7,7 +7,7 @@ package com.miracle.data.common;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonRequest {
+public abstract class BaseCommonRequest {
 
     /**
      * 默认的每页数据量大小:{@value}
@@ -36,7 +36,7 @@ public class CommonRequest {
      * 默认分页
      * 默认查询页码为0
      */
-    public CommonRequest() {
+    public BaseCommonRequest() {
         this.page = 0;
         this.pageSize = DEFAULT_PAGE_SIZE;
         this.isPaging = false;

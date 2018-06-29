@@ -1,6 +1,6 @@
 package com.miracle.data.po.result;
 
-import com.miracle.data.common.CommonResult;
+import com.miracle.data.common.BaseExceptionResult;
 import com.miracle.utils.ListUtils;
 
 import java.util.Collections;
@@ -15,25 +15,12 @@ import java.util.List;
  * @since jdk 1.8
  * @param <E> 负载的数据类型
  */
-public class CommonPersistenceResult<E> extends CommonResult {
-
-    /**
-     * 异常
-     */
-    private Exception exception;
+public class CommonPersistenceResult<E> extends BaseExceptionResult {
 
     /**
      * 数据持有列表
      */
     private List<E> values;
-
-    public Exception getException() {
-        return exception;
-    }
-
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
 
     public List<E> getValues() {
         return values;

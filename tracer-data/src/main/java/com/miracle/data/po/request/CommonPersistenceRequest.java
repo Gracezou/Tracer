@@ -1,6 +1,6 @@
 package com.miracle.data.po.request;
 
-import com.miracle.data.common.CommonRequest;
+import com.miracle.data.common.BaseCommonRequest;
 
 /**
  * Description:po层的基础请求封装类
@@ -9,7 +9,7 @@ import com.miracle.data.common.CommonRequest;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonPersistenceRequest extends CommonRequest {
+public class CommonPersistenceRequest extends BaseCommonRequest {
 
     public CommonPersistenceRequest() {
         super();

@@ -1,6 +1,6 @@
 package com.miracle.data.vo.result;
 
-import com.miracle.data.common.CommonResult;
+import com.miracle.data.common.BaseCommonResult;
 
 /**
  * Description:vo层基础数据返回封装类
@@ -9,5 +9,5 @@ import com.miracle.data.common.CommonResult;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonViewResult extends CommonResult {
+public class CommonViewResult extends BaseCommonResult {
 }

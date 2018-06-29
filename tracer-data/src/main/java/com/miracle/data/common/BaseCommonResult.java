@@ -7,7 +7,7 @@ package com.miracle.data.common;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonResult {
+public abstract class BaseCommonResult {
 
     /**
      * 操作的状态码

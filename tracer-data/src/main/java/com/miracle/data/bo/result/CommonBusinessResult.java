@@ -1,6 +1,6 @@
 package com.miracle.data.bo.result;
 
-import com.miracle.data.common.CommonResult;
+import com.miracle.data.common.BaseExceptionResult;
 
 /**
  * Description:bo层的基础数据返回封装
@@ -9,18 +9,6 @@ import com.miracle.data.common.CommonResult;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonBusinessResult extends CommonResult {
+public class CommonBusinessResult extends BaseExceptionResult {
 
-    /**
-     * 表示出现的异常
-     */
-    private Exception exception;
-
-    public Exception getException() {
-        return exception;
-    }
-
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
 }
