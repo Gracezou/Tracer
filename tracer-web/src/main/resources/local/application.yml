@@ -16,5 +16,10 @@ spring:
   data:
     # 配置mongodb
     mongodb:
-      uri: mongodb://root:rootroot@localhost:27017/tracer
+      host: 127.0.0.1
+      port: 27017
+      database: tracer
+      authentication-database: admin
+      username: dbUser
+      password: admin@merorin090407
 
