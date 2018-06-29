@@ -1,4 +1,4 @@
-package com.miracle.constant;
+package com.miracle.common;
 
 /**
  * Description:封装结果集常量
