@@ -1,6 +1,6 @@
-package com.miracle.vo.result;
+package com.miracle.data.vo.result;
 
-import com.miracle.common.CommonResult;
+import com.miracle.data.common.CommonResult;
 
 /**
  * Description:vo层基础数据返回封装类

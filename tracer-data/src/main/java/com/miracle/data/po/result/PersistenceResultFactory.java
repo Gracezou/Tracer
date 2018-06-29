@@ -1,6 +1,6 @@
-package com.miracle.po.result;
+package com.miracle.data.po.result;
 
-import com.miracle.common.ResultConstant;
+import com.miracle.data.common.ResultConstant;
 
 import java.util.Collections;
 import java.util.List;

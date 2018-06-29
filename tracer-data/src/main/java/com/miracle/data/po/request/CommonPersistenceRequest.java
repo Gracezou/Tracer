@@ -1,6 +1,6 @@
-package com.miracle.po.request;
+package com.miracle.data.po.request;
 
-import com.miracle.common.CommonRequest;
+import com.miracle.data.common.CommonRequest;
 
 /**
  * Description:po层的基础请求封装类

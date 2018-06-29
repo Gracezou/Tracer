@@ -1,4 +1,4 @@
-package com.miracle.common;
+package com.miracle.data.common;
 
 /**
  * Description: 基础的请求封装类

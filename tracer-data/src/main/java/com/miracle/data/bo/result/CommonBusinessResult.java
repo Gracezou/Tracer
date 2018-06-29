@@ -1,6 +1,6 @@
-package com.miracle.bo.result;
+package com.miracle.data.bo.result;
 
-import com.miracle.common.CommonResult;
+import com.miracle.data.common.CommonResult;
 
 /**
  * Description:bo层的基础数据返回封装

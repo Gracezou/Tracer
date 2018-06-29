@@ -1,4 +1,4 @@
-package com.miracle.common;
+package com.miracle.data.common;
 
 /**
  * Description:基础的返回结果类
@@ -11,13 +11,13 @@ public class CommonResult {
 
     /**
      * 操作的状态码
-     * @see com.miracle.common.ResultConstant.Code
+     * @see com.miracle.data.common.ResultConstant.Code
      */
     private int code;
 
     /**
      * 返回结果的信息
-     * @see com.miracle.common.ResultConstant.Message
+     * @see com.miracle.data.common.ResultConstant.Message
      */
     private String message;
 

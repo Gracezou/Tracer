@@ -1,6 +1,6 @@
-package com.miracle.bo.request;
+package com.miracle.data.bo.request;
 
-import com.miracle.common.CommonRequest;
+import com.miracle.data.common.CommonRequest;
 
 /**
  * Description:bo层基础请求参数封装
