@@ -7,7 +7,7 @@ spring:
     name: tracer
   #配置redis
   redis:
-    jedis:
+    lettuce:
       pool:
         max-active: 8
         max-idle: 8
