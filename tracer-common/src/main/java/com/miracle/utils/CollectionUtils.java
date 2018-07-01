@@ -43,6 +43,17 @@ public class CollectionUtils {
     }
 
     /**
+     * 判断一个集合是否包含指定元素
+     * @param collection 集合
+     * @param obj 指定的元素
+     * @param <E> 元素类型
+     * @return true代表包含,false代表不包含
+     */
+    public static <E> boolean isContaining(Collection<E> collection, E obj) {
+        return collection != null && collection.contains(obj);
+    }
+
+    /**
      * 将一个{@link Collection}转化成{@link HashMap}
      * @param collection 集合
      * @param keyGenerator key生成器

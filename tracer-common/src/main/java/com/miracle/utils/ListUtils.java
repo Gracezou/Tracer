@@ -1,5 +1,6 @@
 package com.miracle.utils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,5 +29,16 @@ public class ListUtils {
                 .filter(l -> !l.isEmpty())
                 .map(values -> values.get(0))
                 .orElse(null);
+    }
+
+    /**
+     * 得到一个非{@code null}的list
+     * 如果传入的list不为{@code null}则返回自身,为{@code null}则返回{@link Collections#emptyList()}
+     * @param list 传入的list
+     * @param <T> 数据类型
+     * @return 校验后的list
+     */
+    public static <T> List<T> notNullOrEmptyList(List<T> list) {
+        return Optional.ofNullable(list).orElseGet(Collections::emptyList);
     }
 }
