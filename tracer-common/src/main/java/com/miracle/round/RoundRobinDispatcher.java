@@ -82,7 +82,7 @@ public class RoundRobinDispatcher {
      */
     public <T> void registerTaskQueue(String queueName, ToLongFunction<T> notification) {
         synchronized (this.taskQueueMap) {
-            this.taskQueueMap.putIfAbsent(queueName, new TaskQueue<>(notification));
+            this.taskQueueMap.putIfAbsent(queueName, new TaskQueue<>(queueName, notification));
         }
     }
 
@@ -132,14 +132,7 @@ public class RoundRobinDispatcher {
     private void runPeriodically() {
         // 计算此次执行的过期时间
         final long currentExpireTime = System.currentTimeMillis() + this.timeSlice;
-        this.taskQueueMap.forEach((key, value) -> {
-            QUEUE_RESOURCE_LOCK.lock(key);
-            try {
-                this.processOnTaskQueue(currentExpireTime, value);
-            } finally {
-                QUEUE_RESOURCE_LOCK.unlock(key);
-            }
-        });
+        this.taskQueueMap.values().forEach(taskQueue -> this.processOnTaskQueue(currentExpireTime, taskQueue));
     }
 
     /**
@@ -149,8 +142,13 @@ public class RoundRobinDispatcher {
      * @param <T> 任务队列中数据的类型
      */
     private <T> void processOnTaskQueue(long expireTime, TaskQueue<T> taskQueue) {
-        final List<BinaryTree.Node<Long, Task<T>>> nodes = taskQueue.pollAllExpireNode(expireTime);
-        nodes.forEach(node -> this.processSubTree(node, taskQueue.notification));
+        QUEUE_RESOURCE_LOCK.lock(taskQueue.queueName);
+        try {
+            final List<BinaryTree.Node<Long, Task<T>>> nodes = taskQueue.pollAllExpireNode(expireTime);
+            nodes.forEach(node -> this.processSubTree(node, taskQueue.notification));
+        } finally {
+            QUEUE_RESOURCE_LOCK.unlock(taskQueue.queueName);
+        }
     }
 
     /**
@@ -165,7 +163,7 @@ public class RoundRobinDispatcher {
         }
         final BinaryTree.Node<Long, Task<T>> rootNode = TreeUtils.findRootNode(node);
         // 前遍历的方式遍历子树
-        TreeUtils.acceptPreOrderTraveral(rootNode, n -> this.processNode(n, taskExecutor));
+        TreeUtils.acceptPreOrderTraversal(rootNode, n -> this.processNode(n, taskExecutor));
     }
 
     /**
@@ -208,6 +206,11 @@ public class RoundRobinDispatcher {
     private static class TaskQueue<T> {
 
         /**
+         * 队列名
+         */
+        private final String queueName;
+
+        /**
          * 存储任务的红黑树
          */
         private final BinaryTree<Long, Task<T>> tree;
@@ -219,7 +222,8 @@ public class RoundRobinDispatcher {
          */
         private final ToLongFunction<T> notification;
 
-        TaskQueue(ToLongFunction<T> notification) {
+        TaskQueue(String queueName, ToLongFunction<T> notification) {
+            this.queueName = queueName;
             this.notification = notification;
             this.tree = new RedBlackTree<>();
         }

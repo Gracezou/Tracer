@@ -51,14 +51,14 @@ public class TreeUtils {
      * @param <K> node中key的类型
      * @param <V> node中value的类型
      */
-    public static <K, V> void acceptPreOrderTraveral(BinaryTree.Node<K, V> node,
-                                                     Consumer<BinaryTree.Node<K, V>> consumer) {
+    public static <K, V> void acceptPreOrderTraversal(BinaryTree.Node<K, V> node,
+                                                      Consumer<BinaryTree.Node<K, V>> consumer) {
         if (node == null) {
             return;
         }
         consumer.accept(node);
-        acceptPreOrderTraveral(node.left(), consumer);
-        acceptPreOrderTraveral(node.right(), consumer);
+        acceptPreOrderTraversal(node.left(), consumer);
+        acceptPreOrderTraversal(node.right(), consumer);
     }
 
     /**
