@@ -85,7 +85,7 @@ public class RoundRobinDispatcher {
         }
         final long taskCompleteTime = this.getTaskCompleteTime(taskDuration);
         final String actualQueueName = this.buildActualQueueName(obj, queueName);
-        queueResourceLock.lock(queueName);
+        this.queueResourceLock.lock(queueName);
         try {
             TaskQueueDelegate<T> queue = (TaskQueueDelegate<T>) this.taskQueueMap.computeIfAbsent(actualQueueName,
                     k -> new TaskQueueDelegate<>(actualQueueName, taskExecutor));
@@ -93,7 +93,7 @@ public class RoundRobinDispatcher {
             // 加入每个队列所对应的数据set中
             ((Set<T>)this.queueObjectsMap.computeIfAbsent(actualQueueName, k -> new HashSet<>())).add(obj);
         } finally {
-            queueResourceLock.unlock(actualQueueName);
+            this.queueResourceLock.unlock(actualQueueName);
         }
     }
 
@@ -103,12 +103,12 @@ public class RoundRobinDispatcher {
      * @param queueName 任务队列名
      */
     public void remove(Object obj, String queueName) {
-        queueResourceLock.lock(queueName);
+        this.queueResourceLock.lock(queueName);
         try {
             Optional.ofNullable(this.queueObjectsMap.get(queueName))
                     .ifPresent(set -> set.remove(obj));
         } finally {
-            queueResourceLock.unlock(queueName);
+            this.queueResourceLock.unlock(queueName);
         }
     }
 
@@ -127,11 +127,11 @@ public class RoundRobinDispatcher {
      * @param <T> 任务队列中数据的类型
      */
     private <T> void processOnTaskQueue(TaskQueueDelegate<T> taskQueue) {
-        queueResourceLock.lock(taskQueue.queueName);
+        this.queueResourceLock.lock(taskQueue.queueName);
         try {
             this.runTaskAsync(taskQueue.poll(), taskQueue.notification);
         } finally {
-            queueResourceLock.unlock(taskQueue.queueName);
+            this.queueResourceLock.unlock(taskQueue.queueName);
         }
     }
 
