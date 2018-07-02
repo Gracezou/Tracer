@@ -53,16 +53,17 @@ public abstract class AbstractResourceLock implements ResourceLock {
         if (time <= 0) {
             return tryLock(key);
         }
+        boolean result;
         final String storeKey = this.buildResourceKey(key);
         final String lockingThreadId = this.getCurrentThreadId();
         final long start = System.currentTimeMillis();
-        while (!this.doLock(storeKey, lockingThreadId)) {
+        while (!(result = this.doLock(storeKey, lockingThreadId))) {
             this.await();
             if ((System.currentTimeMillis() - start) < unit.toMillis(time)) {
                 break;
             }
         }
-        return false;
+        return result;
     }
 
     @Override
