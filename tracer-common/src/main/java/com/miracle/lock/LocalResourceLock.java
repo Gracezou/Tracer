@@ -1,5 +1,9 @@
 package com.miracle.lock;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Description:用于一个进程内的资源锁
  *
@@ -9,18 +13,28 @@ package com.miracle.lock;
  */
 public class LocalResourceLock extends AbstractResourceLock {
 
+    private final Map<String, String> lockPool = new ConcurrentHashMap<>(16);
+
+    public LocalResourceLock() {
+        super();
+    }
+
+    public LocalResourceLock(long retryDelay) {
+        super(retryDelay);
+    }
+
     @Override
     protected boolean doLock(String key, String lockerId) {
-        return false;
+        return this.lockPool.putIfAbsent(key, lockerId) == null;
     }
 
     @Override
     protected boolean doUnlock(String key) {
-        return false;
+        return this.lockPool.remove(key) != null;
     }
 
     @Override
-    protected boolean isLocked(String key) {
-        return false;
+    protected String getLockingThreadId(String key) {
+        return this.lockPool.get(key);
     }
 }
