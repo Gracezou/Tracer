@@ -6,7 +6,6 @@ import com.miracle.utils.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,29 +26,19 @@ public class RoundRobinDispatcher {
     static final long DEFAULT_TIME_SLICE = 100L;
 
     /**
+     * 工作队列集合
+     */
+    private final Map<String, TaskQueueDelegate<?>> taskQueueMap;
+
+    /**
      * 任务队列的资源锁
      */
-    private static final ResourceLock QUEUE_RESOURCE_LOCK = new LocalResourceLock();
+    private final ResourceLock queueResourceLock;
 
     /**
      * 每个时间片的大小
      */
     private final long timeSlice;
-
-    /**
-     * 周期性任务执行者
-     */
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE =
-            new ScheduledThreadPoolExecutor(1, r -> {
-                final Thread thread = new Thread(r);
-                thread.setName("RoundRobinDispatcher");
-                return thread;
-            });
-
-    /**
-     * 工作队列集合
-     */
-    private final Map<String, TaskQueueDelegate<?>> taskQueueMap;
 
     /**
      * 每个队列与元素集合的对应关系
@@ -73,7 +62,12 @@ public class RoundRobinDispatcher {
         this.taskQueueMap = new HashMap<>(16);
         this.queueObjectsMap = new HashMap<>(16);
         this.lastDeadline = new AtomicLong(System.currentTimeMillis());
-        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(this::runPeriodically, 0, this.timeSlice, TimeUnit.MILLISECONDS);
+        this.queueResourceLock = new LocalResourceLock();
+        new ScheduledThreadPoolExecutor(1, r -> {
+            final Thread thread = new Thread(r);
+            thread.setName("RoundRobinDispatcher");
+            return thread;
+        }).scheduleAtFixedRate(this::runPeriodically, 0, this.timeSlice, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -91,7 +85,7 @@ public class RoundRobinDispatcher {
         }
         final long taskCompleteTime = this.getTaskCompleteTime(taskDuration);
         final String actualQueueName = this.buildActualQueueName(obj, queueName);
-        QUEUE_RESOURCE_LOCK.lock(queueName);
+        queueResourceLock.lock(queueName);
         try {
             TaskQueueDelegate<T> queue = (TaskQueueDelegate<T>) this.taskQueueMap.computeIfAbsent(actualQueueName,
                     k -> new TaskQueueDelegate<>(actualQueueName, taskExecutor));
@@ -99,7 +93,7 @@ public class RoundRobinDispatcher {
             // 加入每个队列所对应的数据set中
             ((Set<T>)this.queueObjectsMap.computeIfAbsent(actualQueueName, k -> new HashSet<>())).add(obj);
         } finally {
-            QUEUE_RESOURCE_LOCK.unlock(actualQueueName);
+            queueResourceLock.unlock(actualQueueName);
         }
     }
 
@@ -109,12 +103,12 @@ public class RoundRobinDispatcher {
      * @param queueName 任务队列名
      */
     public void remove(Object obj, String queueName) {
-        QUEUE_RESOURCE_LOCK.lock(queueName);
+        queueResourceLock.lock(queueName);
         try {
             Optional.ofNullable(this.queueObjectsMap.get(queueName))
                     .ifPresent(set -> set.remove(obj));
         } finally {
-            QUEUE_RESOURCE_LOCK.unlock(queueName);
+            queueResourceLock.unlock(queueName);
         }
     }
 
@@ -133,11 +127,11 @@ public class RoundRobinDispatcher {
      * @param <T> 任务队列中数据的类型
      */
     private <T> void processOnTaskQueue(TaskQueueDelegate<T> taskQueue) {
-        QUEUE_RESOURCE_LOCK.lock(taskQueue.queueName);
+        queueResourceLock.lock(taskQueue.queueName);
         try {
             this.runTaskAsync(taskQueue.poll(), taskQueue.notification);
         } finally {
-            QUEUE_RESOURCE_LOCK.unlock(taskQueue.queueName);
+            queueResourceLock.unlock(taskQueue.queueName);
         }
     }
 
