@@ -54,7 +54,7 @@ public class RoundRobinDispatcher {
     /**
      * 每个队列与元素集合的对应关系
      */
-    private final Map<String, Set<Object>> queueObjectsMap;
+    private final Map<String, Set<?>> queueObjectsMap;
 
     /**
      * 上一次的任务截止时间
@@ -97,7 +97,7 @@ public class RoundRobinDispatcher {
                     k -> new TaskQueueDelegate<>(actualQueueName, taskExecutor));
             queue.offer(new Task<>(obj, taskCompleteTime, actualQueueName));
             // 加入每个队列所对应的数据set中
-            this.queueObjectsMap.computeIfAbsent(actualQueueName, k -> new HashSet<>()).add(obj);
+            ((Set<T>)this.queueObjectsMap.computeIfAbsent(actualQueueName, k -> new HashSet<>())).add(obj);
         } finally {
             QUEUE_RESOURCE_LOCK.unlock(actualQueueName);
         }
@@ -144,7 +144,7 @@ public class RoundRobinDispatcher {
     @SuppressWarnings("unchecked")
     private <T> void runTaskAsync(Task<T> task, ToLongFunction<T> taskExecutor) {
         // 如果在对应队列所持有的对象集中不存在所需要执行任务中持有的对象,说明这个任务已经被外界通过调用remove()取消掉了,不执行
-        Set<Object> queueObjectsSet = this.queueObjectsMap.get(task.queueName);
+        Set<T> queueObjectsSet = (Set<T>) this.queueObjectsMap.get(task.queueName);
         if (!CollectionUtils.isContaining(queueObjectsSet, task.obj)) {
             return;
         }
