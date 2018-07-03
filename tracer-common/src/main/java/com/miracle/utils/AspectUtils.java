@@ -39,4 +39,16 @@ public class AspectUtils {
         }
         return result;
     }
+
+    /**
+     * 从连接点中获取第一个参数
+     * @param joinPoint 连接点
+     * @param <T> 参数类型
+     * @return 返回的参数
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getFirstArgFromJoinPoint(ProceedingJoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        return (T) args[0];
+    }
 }
