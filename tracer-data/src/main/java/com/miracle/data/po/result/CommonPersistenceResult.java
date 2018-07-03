@@ -1,7 +1,6 @@
 package com.miracle.data.po.result;
 
 import com.miracle.data.common.BaseExceptionResult;
-import com.miracle.utils.ListUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +35,6 @@ public class CommonPersistenceResult<E> extends BaseExceptionResult {
      * @return 返回元素
      */
     public E getValue() {
-        return ListUtils.getFirst(this.values);
+        return this.values == null ? null : this.values.get(0);
     }
 }

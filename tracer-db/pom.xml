@@ -16,17 +16,10 @@
     <description>这个项目封装了tracer项目所有db操作</description>
 
     <dependencies>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tracer-data</artifactId>
+            <artifactId>tracer-common</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <!--开启aop-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
     </dependencies>
 

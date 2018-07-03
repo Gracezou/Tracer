@@ -50,6 +50,21 @@ public class PersistenceResultFactory {
     }
 
     /**
+     * 构造不带返回值的成功返回结果
+     * @param supplier 返回结果的构造函数
+     * @param <V> 数据类型
+     * @param <R> 返回结果类型
+     * @return 返回结果
+     */
+    public static <V, R extends CommonPersistenceResult<V>> R successResult(Supplier<R> supplier) {
+        final R result = supplier.get();
+        result.setCode(ResultConstant.Code.SUCCESS);
+        result.setMessage(ResultConstant.Message.SUCCESS);
+
+        return result;
+    }
+
+    /**
      * 构造错误的返回结果
      * @param supplier 返回结果的构造函数
      * @param <V> 数据类型

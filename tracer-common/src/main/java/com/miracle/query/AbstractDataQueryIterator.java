@@ -1,4 +1,4 @@
-package com.miracle.utils.query;
+package com.miracle.query;
 
 import com.miracle.data.common.BaseCommonRequest;
 import com.miracle.data.common.BaseExceptionResult;
