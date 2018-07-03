@@ -4,6 +4,10 @@ import com.miracle.data.po.data.BasePO;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Description:用于的PO对象
  *
@@ -97,5 +101,18 @@ public class UserPO extends BasePO {
 
     public void setHeadshot(String headshot) {
         this.headshot = headshot;
+    }
+
+    @Override
+    public Map<String, String> toStringMap() {
+        // 6 / 0.75 = 8
+        final Map<String, String> map = new HashMap<>(8);
+        Optional.ofNullable(this.id).ifPresent(o -> map.put(BasePO.Column.ID, o));
+        Optional.ofNullable(this.emailAddress).ifPresent(o -> map.put(Column.EMAIL_ADDRESS, o));
+        Optional.ofNullable(this.cellphoneNumber).ifPresent(o -> map.put(Column.CELLPHONE_NUMBER, o));
+        Optional.ofNullable(this.username).ifPresent(o -> map.put(Column.USERNAME, o));
+        Optional.ofNullable(this.password).ifPresent(o -> map.put(Column.PASSWORD, this.password));
+        Optional.ofNullable(this.headshot).ifPresent(o -> map.put(Column.HEADSHOT, this.headshot));
+        return map;
     }
 }
