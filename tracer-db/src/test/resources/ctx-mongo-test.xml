@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+
+    <context:property-placeholder location="mongodb.properties"/>
+
+    <!-- 定义mongo-client对象 -->
+    <mongo:mongo-client id="mongoClient" host="${mongo.host}" port="${mongo.port}"
+                        credentials="${mongo.mongoUser}:${mongo.pwd}@${mongo.authDbName}">
+        <!--这里配置client相关选项参数-->
+        <mongo:client-options
+                connections-per-host="${mongo.connectionsPerHost}"
+                min-connections-per-host="${mongo.minConnectionsPerHost}"
+                threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                connect-timeout="${mongo.connectTimeout}"
+                max-wait-time="${mongo.maxWaitTime}"
+                socket-keep-alive="${mongo.socketKeepAlive}"
+                socket-timeout="${mongo.socketTimeout}"
+                description="${mongo.description}"
+                max-connection-idle-time="${mongo.maxConnectionIdleTime}"
+                max-connection-life-time="${mongo.maxConnectionLifeTime}"
+                heartbeat-socket-timeout="${mongo.heartbeatSocketTimeout}"
+                heartbeat-connect-timeout="${mongo.heartbeatConnectTimeout}"
+                min-heartbeat-frequency="${mongo.minHeartbeatFrequency}"
+                heartbeat-frequency="${mongo.heartbeatFrequency}"
+        />
+    </mongo:mongo-client>
+
+    <mongo:db-factory id="mongoDbFactory"
+                      dbname="${mongo.defaultDbName}"
+                      mongo-ref="mongoClient"/>
+
+    <!--spring提供的mongodb操作模板-->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongoDbFactory" />
+    </bean>
+</beans>

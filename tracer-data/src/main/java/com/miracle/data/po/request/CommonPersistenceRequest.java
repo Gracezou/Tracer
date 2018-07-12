@@ -1,12 +1,12 @@
 package com.miracle.data.po.request;
 
 import com.miracle.data.common.BaseCommonRequest;
+import com.miracle.data.po.data.BasePO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Description:po层的基础请求封装类
@@ -30,7 +30,7 @@ public class CommonPersistenceRequest extends BaseCommonRequest implements Pagea
 
     public CommonPersistenceRequest() {
         super();
-        this.sortingColumns = new LinkedList<>();
+        this.sortingColumns = Collections.singletonList(BasePO.Column.CREATE_TIME);
     }
 
     @Override
@@ -83,8 +83,8 @@ public class CommonPersistenceRequest extends BaseCommonRequest implements Pagea
         return sortingColumns;
     }
 
-    public void addSortingColumn(String column) {
-        Optional.ofNullable(column).ifPresent(this.sortingColumns::add);
+    public void setSortingColumns(String... columns) {
+        this.sortingColumns = Arrays.stream(columns).collect(Collectors.toList());
     }
 
     public boolean isAsc() {

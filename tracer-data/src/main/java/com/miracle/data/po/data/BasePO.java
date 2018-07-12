@@ -27,12 +27,6 @@ public abstract class BasePO implements Serializable {
     }
 
     /**
-     * 数据库主键id
-     */
-    @Id
-    protected String id;
-
-    /**
      * 数据创建时间
      */
     @Field(Column.CREATE_TIME)
@@ -46,17 +40,9 @@ public abstract class BasePO implements Serializable {
 
     /**
      * 转化成字段-值的字符串map
-     * @return
+     * @return 字段-值的字符串map
      */
     public abstract Map<String, String> toStringMap();
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Long getCreateTime() {
         return createTime;

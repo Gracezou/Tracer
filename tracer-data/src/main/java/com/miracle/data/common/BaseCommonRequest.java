@@ -39,7 +39,7 @@ public abstract class BaseCommonRequest {
     public BaseCommonRequest() {
         this.page = 0;
         this.pageSize = DEFAULT_PAGE_SIZE;
-        this.isPaging = false;
+        this.isPaging = true;
     }
 
     public int getPage() {

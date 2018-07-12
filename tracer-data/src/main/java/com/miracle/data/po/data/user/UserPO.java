@@ -1,11 +1,13 @@
 package com.miracle.data.po.data.user;
 
 import com.miracle.data.po.data.BasePO;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -32,6 +34,12 @@ public class UserPO extends BasePO {
 
         public static final String HEADSHOT = "headshot";
     }
+
+    /**
+     * 数据库主键id
+     */
+    @Id
+    private String id;
 
     /**
      * 电子邮箱地址
@@ -62,6 +70,14 @@ public class UserPO extends BasePO {
      */
     @Field(Column.HEADSHOT)
     private String headshot;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getEmailAddress() {
         return emailAddress;
@@ -114,5 +130,28 @@ public class UserPO extends BasePO {
         Optional.ofNullable(this.password).ifPresent(o -> map.put(Column.PASSWORD, this.password));
         Optional.ofNullable(this.headshot).ifPresent(o -> map.put(Column.HEADSHOT, this.headshot));
         return map;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserPO)) {
+            return false;
+        }
+        UserPO userPO = (UserPO) o;
+        return Objects.equals(id, userPO.id) &&
+                Objects.equals(emailAddress, userPO.emailAddress) &&
+                Objects.equals(username, userPO.username) &&
+                Objects.equals(cellphoneNumber, userPO.cellphoneNumber) &&
+                Objects.equals(password, userPO.password) &&
+                Objects.equals(headshot, userPO.headshot);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, emailAddress, username, cellphoneNumber, password, headshot);
     }
 }
