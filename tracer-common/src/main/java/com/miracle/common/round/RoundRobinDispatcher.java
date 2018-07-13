@@ -85,7 +85,7 @@ public class RoundRobinDispatcher {
         }
         final long taskCompleteTime = this.getTaskCompleteTime(taskDuration);
         final String actualQueueName = this.buildActualQueueName(obj, queueName);
-        this.queueResourceLock.lock(queueName);
+        this.queueResourceLock.lock(actualQueueName);
         try {
             TaskQueueDelegate<T> queue = (TaskQueueDelegate<T>) this.taskQueueMap.computeIfAbsent(actualQueueName,
                     k -> new TaskQueueDelegate<>(actualQueueName, taskExecutor));
@@ -103,12 +103,13 @@ public class RoundRobinDispatcher {
      * @param queueName 任务队列名
      */
     public void remove(Object obj, String queueName) {
-        this.queueResourceLock.lock(queueName);
+        final String actualQueueName = this.buildActualQueueName(obj, queueName);
+        this.queueResourceLock.lock(actualQueueName);
         try {
-            Optional.ofNullable(this.queueObjectsMap.get(queueName))
+            Optional.ofNullable(this.queueObjectsMap.get(actualQueueName))
                     .ifPresent(set -> set.remove(obj));
         } finally {
-            this.queueResourceLock.unlock(queueName);
+            this.queueResourceLock.unlock(actualQueueName);
         }
     }
 

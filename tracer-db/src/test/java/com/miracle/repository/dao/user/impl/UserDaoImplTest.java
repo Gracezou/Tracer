@@ -3,7 +3,6 @@ package com.miracle.repository.dao.user.impl;
 import com.miracle.common.utils.CollectionUtils;
 import com.miracle.common.utils.SerializableCloneUtils;
 import com.miracle.data.common.ResultConstant;
-import com.miracle.data.po.data.BasePO;
 import com.miracle.data.po.data.user.UserPO;
 import com.miracle.data.po.request.user.UserPersistenceRequest;
 import com.miracle.data.po.result.user.UserPersisitenceResult;
