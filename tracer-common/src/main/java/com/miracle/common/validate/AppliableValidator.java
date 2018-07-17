@@ -2,7 +2,6 @@ package com.miracle.common.validate;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * Description:参数校验器
@@ -13,7 +12,7 @@ import java.util.function.Predicate;
  * @since jdk 1.8
  * @param <T> 被校验的参数类型
  */
-public class AppliableValidator<T> extends AbstractValidator<T> {
+public class AppliableValidator<T> extends AbstractValidator<AppliableValidator<T>, T> {
 
     /**
      * 构造器
@@ -74,92 +73,6 @@ public class AppliableValidator<T> extends AbstractValidator<T> {
             throw new NullPointerException(NULL_ERROR_CODE_MESSAGE);
         }
         return new AppliableValidator<>(value, nullValueCode, fastValidate);
-    }
-
-    /**
-     * 判断mapper返回值非空
-     * @param mapper 传入的mapper
-     * @param errorMsg 错误信息
-     * @param <R> mapper返回的类型
-     * @return 返回更新后的校验者
-     */
-    public <R> AppliableValidator<T> notNull(Function<? super T, ? extends R> mapper, String errorMsg) {
-        return this.notNull(mapper, errorMsg, NO_ERROR_CODE);
-    }
-
-    /**
-     * 判断mapper返回值非空
-     * @param mapper 传入的mapper
-     * @param errorMsg 错误信息
-     * @param errorCode 错误码
-     * @param <R> mapper返回的类型
-     * @return 返回更新后的校验者
-     */
-    public <R> AppliableValidator<T> notNull(Function<? super T, ? extends R> mapper,
-                                                String errorMsg,
-                                                String errorCode) {
-        this.checkValue();
-        if (this.keepValidating() && this.value != null && mapper.apply(this.value) == null) {
-            this.setError(errorCode, errorMsg);
-        }
-        return this;
-    }
-
-    /**
-     * 自定义校验方式
-     * 当传入的{@code predicate}通过时视作校验成功
-     * @param predicate 传入的断言
-     * @param errorMsg 错误信息
-     * @return 返回更新后的校验者
-     */
-    public AppliableValidator<T> on(Predicate<? super T> predicate, String errorMsg) {
-        return this.on(predicate, errorMsg, NO_ERROR_CODE);
-    }
-
-    /**
-     * 自定义校验方式
-     * 当传入的{@code predicate}通过时视作校验成功
-     * @param predicate 传入的断言
-     * @param errorMsg 错误信息
-     * @param errorCode 错误码
-     * @return 返回更新后的校验者
-     */
-    public AppliableValidator<T> on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
-        this.checkValue();
-        if (this.keepValidating() && !predicate.test(this.value)) {
-            this.setError(errorCode, errorMsg);
-        }
-        return this;
-    }
-
-    /**
-     * 自定义校验方式,当满足条件时才进行校验
-     * @param predicate 校验断言
-     * @param errorMsg 错误信息
-     * @param condition 校验的条件
-     * @return 返回更新后的校验者
-     */
-    public AppliableValidator<T> onIf(Predicate<? super T> predicate, String errorMsg, Predicate<? super T> condition) {
-        return this.onIf(predicate, errorMsg, condition, NO_ERROR_CODE);
-    }
-
-    /**
-     * 自定义校验方式,当满足条件时才进行校验
-     * @param predicate 校验断言
-     * @param errorMsg 错误信息
-     * @param condition 校验的条件
-     * @param errorCode 错误码
-     * @return 返回更新后的校验者
-     */
-    public AppliableValidator<T> onIf(Predicate<? super T> predicate,
-                                       String errorMsg,
-                                       Predicate<? super T> condition,
-                                      String errorCode) {
-        this.checkValue();
-        if (this.keepValidating() && condition.test(this.value) && !predicate.test(this.value)) {
-            this.setError(errorCode, errorMsg);
-        }
-        return this;
     }
 
     /**

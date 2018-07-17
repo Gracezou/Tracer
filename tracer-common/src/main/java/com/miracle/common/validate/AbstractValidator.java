@@ -4,6 +4,8 @@ import com.miracle.common.utils.JsonUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Description:参数校验器抽象实现
@@ -13,7 +15,8 @@ import java.util.List;
  * @since jdk 1.8
  * @param <T> 被校验的参数类型
  */
-abstract class AbstractValidator<T> {
+@SuppressWarnings("unchecked")
+abstract class AbstractValidator<V, T> {
 
     /**
      * {@link #value}为{@code null}时的默认错误信息。默认为{@value}
@@ -68,7 +71,7 @@ abstract class AbstractValidator<T> {
      * 是否继续验证,不跳过后续的验证步骤
      * @return true代表继续, false反之
      */
-    boolean keepValidating() {
+    private boolean keepValidating() {
         return this.errorEntries.isEmpty() || !this.fastValidate;
     }
 
@@ -77,7 +80,7 @@ abstract class AbstractValidator<T> {
      * @param errCode 错误码
      * @param errMsg 错误信息
      */
-    void setError(String errCode, String errMsg) {
+    private void setError(String errCode, String errMsg) {
         this.errorEntries.add(new ErrorEntry(errCode, errMsg));
     }
 
@@ -98,6 +101,92 @@ abstract class AbstractValidator<T> {
             return;
         }
         this.errorEntries.add(new ErrorEntry(this.nullValueCode, DEFAULT_NULL_VALUE_MESSAGE));
+    }
+
+    /**
+     * 判断mapper返回值非空
+     * @param mapper 传入的mapper
+     * @param errorMsg 错误信息
+     * @param <R> mapper返回的类型
+     * @return 返回更新后的校验者
+     */
+    public <R> V notNull(Function<? super T, ? extends R> mapper, String errorMsg) {
+        return this.notNull(mapper, errorMsg, NO_ERROR_CODE);
+    }
+
+    /**
+     * 判断mapper返回值非空
+     * @param mapper 传入的mapper
+     * @param errorMsg 错误信息
+     * @param errorCode 错误码
+     * @param <R> mapper返回的类型
+     * @return 返回更新后的校验者
+     */
+    public <R> V notNull(Function<? super T, ? extends R> mapper,
+                                             String errorMsg,
+                                             String errorCode) {
+        this.checkValue();
+        if (this.keepValidating() && this.value != null && mapper.apply(this.value) == null) {
+            this.setError(errorCode, errorMsg);
+        }
+        return (V) this;
+    }
+
+    /**
+     * 自定义校验方式
+     * 当传入的{@code predicate}通过时视作校验成功
+     * @param predicate 传入的断言
+     * @param errorMsg 错误信息
+     * @return 返回更新后的校验者
+     */
+    public V on(Predicate<? super T> predicate, String errorMsg) {
+        return this.on(predicate, errorMsg, NO_ERROR_CODE);
+    }
+
+    /**
+     * 自定义校验方式
+     * 当传入的{@code predicate}通过时视作校验成功
+     * @param predicate 传入的断言
+     * @param errorMsg 错误信息
+     * @param errorCode 错误码
+     * @return 返回更新后的校验者
+     */
+    public V on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
+        this.checkValue();
+        if (this.keepValidating() && !predicate.test(this.value)) {
+            this.setError(errorCode, errorMsg);
+        }
+        return (V) this;
+    }
+
+    /**
+     * 自定义校验方式,当满足条件时才进行校验
+     * @param predicate 校验断言
+     * @param errorMsg 错误信息
+     * @param condition 校验的条件
+     * @return 返回更新后的校验者
+     */
+    public V onIf(Predicate<? super T> predicate, String errorMsg, Predicate<? super T> condition) {
+        return this.onIf(predicate, errorMsg, condition, NO_ERROR_CODE);
+    }
+
+    /**
+     * 自定义校验方式,当满足条件时才进行校验
+     * @param predicate 校验断言
+     * @param errorMsg 错误信息
+     * @param condition 校验的条件
+     * @param errorCode 错误码
+     * @return 返回更新后的校验者
+     */
+    public V onIf(Predicate<? super T> predicate,
+                                      String errorMsg,
+                                      Predicate<? super T> condition,
+                                      String errorCode) {
+        this.checkValue();
+        if (this.keepValidating() && condition.test(this.value) && !predicate.test(this.value)) {
+            this.setError(errorCode, errorMsg);
+        }
+        return (V) this;
     }
 
     /**
