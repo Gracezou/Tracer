@@ -2,8 +2,9 @@ package com.miracle.common.validate;
 
 import com.miracle.common.utils.JsonUtils;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -46,7 +47,7 @@ abstract class AbstractValidator<V, T> {
     /**
      * 用于存储错误信息,如果校验无错那么这个值是{@code null}
      */
-    private final List<ErrorEntry> errorEntries;
+    private final Set<ErrorEntry> errorEntries;
 
     /**
      * 用于判断是否属于快速校验状态
@@ -63,7 +64,7 @@ abstract class AbstractValidator<V, T> {
     AbstractValidator(T value, String nullValueCode, boolean fastValidate) {
         this.value = value;
         this.nullValueCode = nullValueCode;
-        this.errorEntries = new LinkedList<>();
+        this.errorEntries = new HashSet<>(16);
         this.fastValidate = fastValidate;
     }
 
@@ -223,6 +224,25 @@ abstract class AbstractValidator<V, T> {
 
         public String getMessage() {
             return message;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof ErrorEntry)) {
+                return false;
+            }
+            ErrorEntry that = (ErrorEntry) o;
+            return Objects.equals(code, that.code) &&
+                    Objects.equals(message, that.message);
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(code, message);
         }
     }
 }
