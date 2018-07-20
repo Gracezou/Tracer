@@ -59,7 +59,6 @@ public class UserDaoImpl implements UserDao {
 
         UserPersisitenceResult result;
         try {
-            // 不存在就insert,存在就update
             this.mongoTemplate.updateMulti(query, update, UserPO.class);
             result = PersistenceResultFactory.successResult(UserPersisitenceResult::new);
         } catch (Exception ex) {

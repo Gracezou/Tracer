@@ -196,7 +196,7 @@ public class RoundRobinDispatcher {
         private final String queueName;
 
         /**
-         * 存储任务的红黑树
+         * 存储任务的队列
          */
         private final Queue<Task<E>> delegate;
 
