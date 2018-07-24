@@ -1,6 +1,6 @@
 package com.miracle.data.po.data;
 
-import org.springframework.data.annotation.Id;
+import com.miracle.data.Jsonable;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import java.util.Map;
  * @version 1.0
  * @since jdk 1.8
  */
-public abstract class BasePO implements Serializable {
+public abstract class BasePO implements Serializable, Jsonable {
 
     private static final long serialVersionUID = -3034569703573083989L;
 
@@ -58,5 +58,13 @@ public abstract class BasePO implements Serializable {
 
     public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
+    }
+
+    @Override
+    public String toString() {
+        return "BasePO{" +
+                "createTime=" + createTime +
+                ", lastModified=" + lastModified +
+                '}';
     }
 }

@@ -154,4 +154,16 @@ public class UserPO extends BasePO {
 
         return Objects.hash(id, emailAddress, username, cellphoneNumber, password, headshot);
     }
+
+    @Override
+    public String toString() {
+        return "UserPO{" +
+                "id='" + id + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", username='" + username + '\'' +
+                ", cellphoneNumber='" + cellphoneNumber + '\'' +
+                ", password='" + password + '\'' +
+                ", headshot='" + headshot + '\'' +
+                "} " + super.toString();
+    }
 }

@@ -26,12 +26,6 @@
             <artifactId>dozer-core</artifactId>
         </dependency>
 
-        <!--启用fastjson-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-
         <!--开启aop-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
