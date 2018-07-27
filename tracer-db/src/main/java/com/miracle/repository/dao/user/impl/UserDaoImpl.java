@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Description:user-dao的实现类
@@ -27,6 +28,8 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
 
+    private static final Supplier<UserPersisitenceResult> RESULT_SUPPLIER = UserPersisitenceResult::new;
+
     @Resource
     private MongoTemplate mongoTemplate;
 
@@ -37,9 +40,9 @@ public class UserDaoImpl implements UserDao {
         try {
             // 不存在就insert,存在就update
             this.mongoTemplate.insert(user);
-            result = PersistenceResultFactory.successResult(UserPersisitenceResult::new);
+            result = PersistenceResultFactory.successResult(RESULT_SUPPLIER);
         } catch (Exception ex) {
-            result = PersistenceResultFactory.errorResult(UserPersisitenceResult::new, ex);
+            result = PersistenceResultFactory.errorResult(RESULT_SUPPLIER, ex);
         }
         return result;
     }
@@ -60,9 +63,9 @@ public class UserDaoImpl implements UserDao {
         UserPersisitenceResult result;
         try {
             this.mongoTemplate.updateMulti(query, update, UserPO.class);
-            result = PersistenceResultFactory.successResult(UserPersisitenceResult::new);
+            result = PersistenceResultFactory.successResult(RESULT_SUPPLIER);
         } catch (Exception ex) {
-            result = PersistenceResultFactory.errorResult(UserPersisitenceResult::new, ex);
+            result = PersistenceResultFactory.errorResult(RESULT_SUPPLIER, ex);
         }
         return result;
     }
@@ -75,9 +78,9 @@ public class UserDaoImpl implements UserDao {
         UserPersisitenceResult result;
         try {
             this.mongoTemplate.findAndRemove(query, UserPO.class);
-            result = PersistenceResultFactory.successResult(UserPersisitenceResult::new);
+            result = PersistenceResultFactory.successResult(RESULT_SUPPLIER);
         } catch (Exception ex) {
-            result = PersistenceResultFactory.errorResult(UserPersisitenceResult::new, ex);
+            result = PersistenceResultFactory.errorResult(RESULT_SUPPLIER, ex);
         }
         return result;
     }
@@ -97,10 +100,10 @@ public class UserDaoImpl implements UserDao {
             final List<UserPO> list = this.mongoTemplate.find(query, UserPO.class);
             final int totalCount = request.isPaging() ?
                     (int) this.mongoTemplate.count(query, UserPO.class) : list.size();
-            result = PersistenceResultFactory.successResult(UserPersisitenceResult::new,
+            result = PersistenceResultFactory.successResult(RESULT_SUPPLIER,
                     list, request.getPage(), totalCount);
         } catch (Exception ex) {
-            result = PersistenceResultFactory.errorResult(UserPersisitenceResult::new, ex);
+            result = PersistenceResultFactory.errorResult(RESULT_SUPPLIER, ex);
         }
         return result;
     }

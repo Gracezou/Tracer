@@ -119,7 +119,7 @@ public class RoundRobinDispatcher {
     private void runPeriodically() {
         // 计算此次执行的过期时间
         this.lastDeadline.addAndGet(this.timeSlice);
-        this.taskQueueMap.values().forEach(this::processOnTaskQueue);
+        this.taskQueueMap.values().parallelStream().forEach(this::processOnTaskQueue);
     }
 
     /**
@@ -130,39 +130,45 @@ public class RoundRobinDispatcher {
     private <T> void processOnTaskQueue(TaskQueueDelegate<T> taskQueue) {
         this.queueResourceLock.lock(taskQueue.queueName);
         try {
-            this.runTaskAsync(taskQueue.poll(), taskQueue.notification);
+            this.runTaskAsync(taskQueue, taskQueue.notification);
         } finally {
             this.queueResourceLock.unlock(taskQueue.queueName);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void runTaskAsync(Task<T> task, ToLongFunction<T> taskExecutor) {
-        // 如果在对应队列所持有的对象集中不存在所需要执行任务中持有的对象,说明这个任务已经被外界通过调用remove()取消掉了,不执行
-        Set<T> queueObjectsSet = (Set<T>) this.queueObjectsMap.get(task.queueName);
-        if (!CollectionUtils.isContaining(queueObjectsSet, task.obj)) {
-            return;
-        }
-
-        CompletableFuture.runAsync(() -> {
+    private <T> void runTaskAsync(TaskQueueDelegate<T> taskQueue, ToLongFunction<T> taskExecutor) {
+        boolean hasNext = true;
+        while (hasNext) {
+            final Task<T> task = taskQueue.poll();
+            // 如果在对应队列所持有的对象集中不存在所需要执行任务中持有的对象,说明这个任务已经被外界通过调用remove()取消掉了,不执行,检查下一条
+            Set<T> queueObjectsSet = (Set<T>) this.queueObjectsMap.get(task.queueName);
+            if (!CollectionUtils.isContaining(queueObjectsSet, task.obj)) {
+                continue;
+            }
             // 到这一步队列一定不会为null,所以直接用get获取
-            TaskQueueDelegate<T> queue = (TaskQueueDelegate<T>) this.taskQueueMap.get(task.queueName);
-            // 如果时间还没到完成时间,那么重新放回队列之中
-            if (task.completeTime > this.lastDeadline.get()) {
-                queue.offer(task);
-                return;
-            }
-            // 说明时间到了
-            final long result = taskExecutor.applyAsLong(task.obj);
-            // result > 0说明任务没有执行成功,以result作为任务工作时长再度放回时间轮之中
-            if (result > 0) {
-                Task<T> newTask = new Task<>(task.obj, this.getTaskCompleteTime(result), task.queueName);
-                queue.offer(newTask);
+            final TaskQueueDelegate<T> queue = (TaskQueueDelegate<T>) this.taskQueueMap.get(task.queueName);
+            final Runnable runnable;
+            // 如果时间还没到完成时间,那么异步重新放回队列之中
+            // 由于是一个优先级队列,当有一条不满足要求之时后续已经都不满足要求了
+            if (hasNext = (task.completeTime <= this.lastDeadline.get())) {
+                // 说明时间到了
+                runnable = () -> {
+                    final long result = taskExecutor.applyAsLong(task.obj);
+                    // result > 0说明任务没有执行成功,以result作为任务工作时长再度放回时间轮之中
+                    if (result > 0) {
+                        Task<T> newTask = new Task<>(task.obj, this.getTaskCompleteTime(result), task.queueName);
+                        queue.offer(newTask);
+                    } else {
+                        // 执行成功,将这个对象从任务队列所对应的objSet中删除
+                        queueObjectsSet.remove(task.obj);
+                    }
+                };
             } else {
-                // 执行成功,将这个对象从任务队列所对应的objSet中删除
-                queueObjectsSet.remove(task.obj);
+                runnable = () -> queue.offer(task);
             }
-        });
+            CompletableFuture.runAsync(runnable);
+        }
     }
 
     /**
@@ -196,7 +202,7 @@ public class RoundRobinDispatcher {
         private final String queueName;
 
         /**
-         * 存储任务的队列
+         * 存储任务的队列,采用优先级队列
          */
         private final Queue<Task<E>> delegate;
 
@@ -210,7 +216,7 @@ public class RoundRobinDispatcher {
         TaskQueueDelegate(String queueName, ToLongFunction<E> notification) {
             this.queueName = queueName;
             this.notification = notification;
-            this.delegate = new LinkedList<>();
+            this.delegate = new PriorityQueue<>(Comparator.comparingLong(task -> task.completeTime));
         }
 
         private void offer(Task<E> eTask) {
